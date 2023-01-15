@@ -18,4 +18,3 @@ if __name__ == "__main__":
 
         with open(filepath + f" ({idx})" + ext, "wb") as f:
             writer.write(f)
-

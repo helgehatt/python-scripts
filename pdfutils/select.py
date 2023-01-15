@@ -18,7 +18,7 @@ if __name__ == "__main__":
     writer = PdfFileWriter()
 
     if isinstance(selection, list):
-        pages = [reader.pages[i-1] for i in selection]
+        pages = [reader.pages[i - 1] for i in selection]
     else:
         pages = reader.pages[selection]
 
@@ -26,4 +26,3 @@ if __name__ == "__main__":
 
     with open(filepath + " (selection)" + ext, "wb") as f:
         writer.write(f)
-

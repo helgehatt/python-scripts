@@ -1,7 +1,7 @@
 import os
 
-folder1 = "H:/Other computers/My MacBook Pro/Pictures"
-folder2 = "D:/Backup/Sara-MacBook Pro (2017-2022)/Pictures"
+folder1 = "E:/Documents"
+folder2 = "C:/Users/Helge/Filen/Documents"
 
 
 def get_files(folder: str):

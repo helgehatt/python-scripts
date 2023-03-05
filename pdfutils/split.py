@@ -1,20 +1,28 @@
-import os
-import sys
+import argparse
+from pathlib import Path
 
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyPDF2 import PdfReader, PdfWriter
+
+
+def split(src: Path, dst: Path):
+    reader = PdfReader(src)
+    for i in range(len(reader.pages)):
+        writer = PdfWriter()
+        writer.add_page(reader.pages[i])
+        writer.write(dst.with_stem(f"{dst.stem} ({i + 1})"))
+
 
 if __name__ == "__main__":
 
-    if len(sys.argv) < 2:
-        raise Exception("Input argument 'filepath' is missing")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filepath", type=Path)
+    parser.add_argument("--filename", "-f", type=Path)
+    parser.add_argument("--dryrun", "-n", action=argparse.BooleanOptionalAction)
+    args = parser.parse_args()
 
-    filepath, ext = os.path.splitext(sys.argv[1])
+    filename = args.filename or args.filepath
 
-    reader = PdfFileReader(filepath + ext)
-
-    for idx, page in enumerate(reader.pages, 1):
-        writer = PdfFileWriter()
-        writer.addPage(page)
-
-        with open(filepath + f" ({idx})" + ext, "wb") as f:
-            writer.write(f)
+    if args.dryrun:
+        print(f"Split '{args.filepath}' and save as '{filename} (page number)'")
+    else:
+        split(args.filepath, filename)

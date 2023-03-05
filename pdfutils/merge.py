@@ -1,21 +1,30 @@
+import argparse
 import glob
-import os
-import sys
+from pathlib import Path
 
-from PyPDF2 import PdfFileMerger
+from PyPDF2 import PdfMerger
+
+
+def merge(filename: str, *files: str):
+    merger = PdfMerger()
+    for f in files:
+        merger.append(f)
+    merger.write(filename)
+
 
 if __name__ == "__main__":
 
-    if len(sys.argv) < 2:
-        raise Exception("Input argument 'filepath' is missing")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("files", nargs="+", type=str)
+    parser.add_argument("--filename", "-f", type=Path)
+    parser.add_argument("--dryrun", "-n", action=argparse.BooleanOptionalAction)
+    args = parser.parse_args()
 
-    filepath = sys.argv[1]
-    files = glob.glob(filepath)
-    files = list(sorted(files, key=len))
+    files = [Path(f) for file in args.files for f in glob.glob(file)]
 
-    merger = PdfFileMerger()
-    for f in files:
-        merger.append(f)
+    filename = args.filename or files[0].with_stem(files[0].stem + ".merged")
 
-    filename, ext = os.path.splitext(files[0])
-    merger.write(f"{filename} (merged){ext}")
+    if args.dryrun:
+        print(f"Merge the following files into '{filename}':", *files, sep="\n")
+    else:
+        merge(filename, *files)
